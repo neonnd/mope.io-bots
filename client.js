@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Mope.io free bots
 // @namespace    OP-Bots free
-// @version      1
-// @description  free bots for mope.io lol
+// @version      1.0.0
+// @description  Mope.io bots
 // @author       SizRex, Neon, NuclearC, Maf1oZRex, MrShadow, Xenon -> OP Bots Team
 // @match        *://mope.io/*
 // @grant        none
