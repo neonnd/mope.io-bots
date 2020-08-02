@@ -5,7 +5,8 @@
 > By OP-Bots team. [discord](https://discord.gg/Fc2Yfsv)
 
 <br />
-## Installation
+
+### Installation
 
 1. Run the file called `install.bat`. 
 2. If you are on chrome install tampermonkey extension from [here](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en), and if you are on firefox download the tampermonkey extension from [here](https://addons.mozilla.org/en-GB/firefox/addon/tampermonkey/)
