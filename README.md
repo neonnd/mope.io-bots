@@ -8,8 +8,9 @@
 
 ### Installation
 
-1. Run the file called `install.bat`. 
-2. If you are on chrome install tampermonkey extension from [here](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en), and if you are on firefox download the tampermonkey extension from [here](https://addons.mozilla.org/en-GB/firefox/addon/tampermonkey/).
+1. Download [Node.JS](https://nodejs.org/en/download/)
+2. Run the file called `install.bat`. 
+3. If you are on chrome install tampermonkey extension from [here](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en), and if you are on firefox download the tampermonkey extension from [here](https://addons.mozilla.org/en-GB/firefox/addon/tampermonkey/).
 
 ### Activating Bots
 
