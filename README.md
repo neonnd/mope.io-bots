@@ -4,6 +4,7 @@
 
 > By OP-Bots team. [discord](https://discord.gg/Fc2Yfsv)
 
+<br />
 ## Installation
 
 1. Run the file called `install.bat`. 
