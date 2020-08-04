@@ -2,7 +2,7 @@ const WebSocket = require("ws");
 const request = require("request-promise");
 const proxyagent = require("proxy-agent");
 
-const botsAmount = 200;
+const botsAmount = 500;
 
 let int = null;
 let proxy = null;
@@ -71,10 +71,14 @@ const startBots = (server) => {
     }
     let b = 0;
     int = setInterval(() => {
+        let aliveBots = 0;
+        for(let i in bots) if(!bots[i].inConnect && !bots[i].closed) aliveBots++;
+        console.clear();
+        console.log(`Server: ${server} | Alive Bots: ${aliveBots}`);
         b++;
         if (b > botsAmount) b = 0;
         if (bots[b] && !bots[b].inConnect && bots[b].closed) bots[b].connect();
-    }, 100);
+    }, 10);
 }
 
 const destroyBots = () => {
@@ -127,6 +131,7 @@ class bot {
         }
         buf.push(7, 80, 3, 206, 1, 0, 0);
         this.send(Buffer.from(buf));
+        this.send(Buffer.from([24, 0]));
     }
     move(x, y) {
         let buf = new Buffer.alloc(5);
@@ -151,9 +156,6 @@ class bot {
         msg = Buffer.from(msg.data);
         let offset = 0;
         switch (msg.readUInt8(offset++)) {
-            case 24:
-                this.send(Buffer.from([24, 1]));
-                break;
             case 63:
                 let secret = msg.readUInt32BE(offset).toString();
                 offset += 4;
