@@ -12,57 +12,62 @@ let bots = [];
 const getProxy = () => {
     request.get("https://api.proxyscrape.com/?request=getproxies&proxytype=socks4&timeout=10000&country=all").then(proxies => {
         proxy = proxies.split("\n");
+        console.log(`${proxy.length} successfully loaded proxy`);
+        initServer();
     })
 };
 
 getProxy();
 
-const Server = new WebSocket.Server({
-    port: 5000
-});
-
-Server.on("connection", ws => {
-    console.log("Client successfully connected")
-    ws.on("message", msg => {
-        msg = Buffer.from(msg);
-        let offset = 0;
-        switch (msg.readUInt8(offset++)) {
-            case 0:
-                {
-                    let byte;
-                    let server = "";
-                    while ((byte = msg.readUInt8(offset++)) != 0) {
-                        server += String.fromCharCode(byte);
-                    }
-                    console.log(`starting bots ${server}`)
-                    startBots(server);
-                } break;
-            case 1:
-                {
-                    destroyBots();
-                } break;
-            case 2:
-                {
-                    let byte;
-                    let token = "";
-                    while ((byte = msg.readUInt8(offset++)) != 0) {
-                        token += String.fromCharCode(byte);
-                    }
-                    recaptchaTokens.addToken(token);
-                } break;
-            case 5:
-                {
-                    moveBots(msg.readInt16BE(1), msg.readInt16BE(3))
-                } break;
-        }
+const initServer = () => {
+    console.log("Server started")
+    const Server = new WebSocket.Server({
+        port: 5000
     });
-    ws.on("close", e => {
-        destroyBots();
+    
+    Server.on("connection", ws => {
+        console.log("Client successfully connected")
+        ws.on("message", msg => {
+            msg = Buffer.from(msg);
+            let offset = 0;
+            switch (msg.readUInt8(offset++)) {
+                case 0:
+                    {
+                        let byte;
+                        let server = "";
+                        while ((byte = msg.readUInt8(offset++)) != 0) {
+                            server += String.fromCharCode(byte);
+                        }
+                        console.log(`starting bots ${server}`)
+                        startBots(server);
+                    } break;
+                case 1:
+                    {
+                        destroyBots();
+                    } break;
+                case 2:
+                    {
+                        let byte;
+                        let token = "";
+                        while ((byte = msg.readUInt8(offset++)) != 0) {
+                            token += String.fromCharCode(byte);
+                        }
+                        recaptchaTokens.addToken(token);
+                    } break;
+                case 5:
+                    {
+                        moveBots(msg.readInt16BE(1), msg.readInt16BE(3))
+                    } break;
+            }
+        });
+        ws.on("close", e => {
+            destroyBots();
+        });
+        ws.on("error", e => {
+            destroyBots();
+        });
     });
-    ws.on("error", e => {
-        destroyBots();
-    });
-});
+}
 
 const startBots = (server) => {
     destroyBots();
@@ -78,7 +83,7 @@ const startBots = (server) => {
         b++;
         if (b > botsAmount) b = 0;
         if (bots[b] && !bots[b].inConnect && bots[b].closed) bots[b].connect();
-    }, 10);
+    }, 100);
 }
 
 const destroyBots = () => {
@@ -119,12 +124,12 @@ class bot {
     open() {
         this.inConnect = false;
         this.closed = false;
-        this.send(Buffer.from([1, 3, 211, 247, 205, 0]))
-        this.send(Buffer.from([2, 1, 0, 6, 83, 105, 122, 82, 101, 120, 7, 80, 3, 196, 1, 0, 0]));
-        this.send(Buffer.from([17, 7, 80, 3, 196]));
+        this.send(Buffer.from([1,0,10,112,181,0]))
+        this.send(Buffer.from([2,1,0,0,7,128,3,169,1,0,0]));
+        this.send(Buffer.from([17,7,80,3,196]));
     }
     spawn() {
-        let nick = this.botNick[~~(Math.random() * this.botNick.length)];
+        let nick = `${this.id}`;
         let buf = [2, 0, 0, nick.length];
         for (let i in nick) {
             buf.push(nick.charCodeAt(i));
@@ -137,9 +142,13 @@ class bot {
         let buf = new Buffer.alloc(5);
         let offset = 0;
         buf.writeUInt8(5, offset++);
-        buf.writeInt16BE(x, offset);
+        let randX = 0;
+        (Math.random() >= 0.5) ? randX += ~~(Math.random() * ~~(Math.random() * 150) + (-~~(Math.random() * 150)) + ~~(Math.random() * 150)) : randX -= ~~(Math.random() * ~~(Math.random() * 150) + (-~~(Math.random() * 150)) + ~~(Math.random() * 150))
+        let randY = 0;
+        Math.random() >= 0.5 ? randY += ~~(Math.random() * ~~(Math.random() * 150) + (-~~(Math.random() * 150)) + ~~(Math.random() * 150)) : randY -= ~~(Math.random() * ~~(Math.random() * 150) + (-~~(Math.random() * 150)) + ~~(Math.random() * 150))
+        buf.writeInt16BE(x + randX, offset);
         offset += 2;
-        buf.writeInt16BE(y, offset);
+        buf.writeInt16BE(y + randY, offset);
         this.send(buf);
     }
     close() {
